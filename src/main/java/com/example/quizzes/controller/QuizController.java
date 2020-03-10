@@ -72,11 +72,6 @@ public class QuizController {
 	 * quizservice.cloneQuiz(id); }
 	 */
 	  
-	  
-	/*
-	 * @GetMapping(value="/showPools/{qid}") public QuizQuestionsAssigning
-	 * showPools(@Pathvari)
-	 */
 }
 
 
