@@ -6,6 +6,7 @@ import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.exception.ServiceExceptions;
 import com.example.quizzes.model.Quiz;
+import com.example.quizzes.model.Quiz_Question;
 
 
 
@@ -22,5 +23,9 @@ public interface IQuizService {
 	int DeleteById(int qid) throws ServiceExceptions, DBExceptions;
 
 	Quiz UpdateById(Quiz quiz) throws ServiceExceptions, DBExceptions;
+
+	List<Quiz_Question> getPoolQuestions(int qid, String poolname) throws ServiceExceptions, DBExceptions;
+
+	Quiz cloneQuiz(Quiz quiz) throws ServiceExceptions, DBExceptions;
 
 }

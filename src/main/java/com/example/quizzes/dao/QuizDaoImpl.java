@@ -3,6 +3,7 @@ package com.example.quizzes.dao;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.management.Query;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.Session;
@@ -14,13 +15,15 @@ import org.springframework.stereotype.Repository;
 import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.model.Quiz;
+import com.example.quizzes.model.Quiz_Question;
 
 @Repository
 public class QuizDaoImpl implements IQuizDao {
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	Transaction transaction;
+
 	@Override
 	public List<Quiz> getAllQuizzes() throws DBExceptions {
 		DBExceptions dbExceptions = new DBExceptions();
@@ -69,12 +72,12 @@ public class QuizDaoImpl implements IQuizDao {
 			transaction = session.beginTransaction();
 			Timestamp ts = new Timestamp(System.currentTimeMillis());
 			// LOGGER.info("time is now: "+ts);
-			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/"+quiz.getSlug());
+			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/" + quiz.getSlug());
 			quiz.setCreated_on(ts);
 			quiz.setCreated_by("Sivakami");
 			quiz.setModified_on(ts);
 			quiz.setModified_by("Sivakami");
-			 quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
+			quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
 			session.save(quiz);
 			transaction.commit();
 		} catch (Exception e) {
@@ -106,13 +109,11 @@ public class QuizDaoImpl implements IQuizDao {
 	@Override
 	public int deleteById(int qid) {
 		Session session = sessionFactory.getCurrentSession();
-		transaction = session.beginTransaction();
-		String hql = "delete Quiz where id = :id";
-		org.hibernate.query.Query q = session.createQuery(hql).setParameter("id", qid);
-		int id = q.executeUpdate();
-		transaction.commit();
+		  transaction = session.beginTransaction(); 
+		  session.delete(session.get(Quiz.class, qid));
+		  transaction.commit();
 		session.close();
-		return id;
+		return qid;
 	}
 
 	@Override
@@ -169,18 +170,40 @@ public class QuizDaoImpl implements IQuizDao {
 		return id;
 	}
 
-	/*
-	 * @Override public List<Quiz> cloneQuiz(int id) throws DBExceptions {
-	 * List<Quiz> quizzesList = null; quizzesList = getQuizByID(id); quiz =
-	 * quizzesList.get(0); try { Session session =
-	 * sessionFactory.getCurrentSession(); transaction = session.beginTransaction();
-	 * session.evict(quiz); // quiz.setId(null); quiz.setCreated_by("Sivakami");
-	 * session.save(quiz); transaction.commit(); } catch (NullPointerException e) {
-	 * throw new DBExceptions("Due to id mismatch cant do the clone operation", e);
-	 * } return quizzesList; }
-	 */
+	@Override
+	public List<Quiz_Question> getPoolQuestions(int qid, String poolname) throws DBExceptions {
+		Session session = null;
+		System.out.println("pool Name: " + poolname);
+		List<Quiz_Question> questions;
+		try {
+			session = sessionFactory.getCurrentSession();
+			questions = session.createQuery(
+					"from Quiz_Question where quiz_id = " + qid
+							+ " and pool_id = (select id from Pool where poolName = '" + poolname + "')",
+					Quiz_Question.class).getResultList();
+			System.out.println("Questions: " + questions);
+		} catch (Exception e) {
+			throw new DBExceptions("Cannot Find the id", e);
+		} finally {
+			session.close();
+		}
+		return questions;
+	}
 
-
-	
-	
+	@Override
+	public Quiz cloneQuiz(Quiz quiz) throws DBExceptions {
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			quiz.setQuiz_id(null); 
+			quiz.setCreated_by("Sivakami");
+			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/" + quiz.getSlug()+"-copy");
+			quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
+			session.save(quiz);
+			transaction.commit();
+		} catch (NullPointerException e) {
+			throw new DBExceptions("Due to id mismatch cant do the clone operation", e);
+		}
+		return quiz;
+	}
 }
