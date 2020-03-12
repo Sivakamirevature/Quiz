@@ -13,11 +13,10 @@ public class Category {
 		@Id
 		@GeneratedValue(strategy = GenerationType.SEQUENCE)
 		@Column(name="category_id")
-		int categoryId;
+		private int categoryId;
 		
 		@Column(name="category_name")
-		
-		String categoryName;
+		private String categoryName;
 		
 		public int getCategoryId() {
 			return categoryId;

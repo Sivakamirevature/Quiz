@@ -1,6 +1,7 @@
 package com.example.quizzes.dao;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.management.Query;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
+import com.example.quizzes.model.Category;
+import com.example.quizzes.model.Level;
 import com.example.quizzes.model.Quiz;
 import com.example.quizzes.model.Quiz_Question;
 
@@ -70,12 +73,12 @@ public class QuizDaoImpl implements IQuizDao {
 		try {
 			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			Timestamp ts = new Timestamp(System.currentTimeMillis());
+			LocalDateTime today = LocalDateTime.now();
 			// LOGGER.info("time is now: "+ts);
 			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/" + quiz.getSlug());
-			quiz.setCreated_on(ts);
+			quiz.setCreated_on(today);
 			quiz.setCreated_by("Sivakami");
-			quiz.setModified_on(ts);
+			quiz.setModified_on(today);
 			quiz.setModified_by("Sivakami");
 			quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
 			session.save(quiz);
@@ -109,9 +112,9 @@ public class QuizDaoImpl implements IQuizDao {
 	@Override
 	public int deleteById(int qid) {
 		Session session = sessionFactory.getCurrentSession();
-		  transaction = session.beginTransaction(); 
-		  session.delete(session.get(Quiz.class, qid));
-		  transaction.commit();
+		transaction = session.beginTransaction();
+		session.delete(session.get(Quiz.class, qid));
+		transaction.commit();
 		session.close();
 		return qid;
 	}
@@ -128,8 +131,9 @@ public class QuizDaoImpl implements IQuizDao {
 			int modified_count = ((Integer) session
 					.createSQLQuery("SELECT modified_count from quiz_settings where quiz_id=" + id + " LIMIT 1")
 					.uniqueResult()).intValue();
-			Timestamp ts = new Timestamp(System.currentTimeMillis());
-			quiz.setModified_on(ts);
+			LocalDateTime today = LocalDateTime.now();
+			quiz.setModified_on(today);
+			quiz.setCreated_on(today);
 			quiz.setModified_count(++(modified_count));
 			quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
 			session.update(quiz);
@@ -192,18 +196,53 @@ public class QuizDaoImpl implements IQuizDao {
 
 	@Override
 	public Quiz cloneQuiz(Quiz quiz) throws DBExceptions {
+		Session session = null;
 		try {
-			Session session = sessionFactory.getCurrentSession();
+			session = sessionFactory.getCurrentSession();
 			transaction = session.beginTransaction();
-			quiz.setQuiz_id(null); 
+			quiz.setQuiz_id(null);
 			quiz.setCreated_by("Sivakami");
-			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/" + quiz.getSlug()+"-copy");
+			quiz.setSlug("https://qa.revature.com/Revature Pro/quiz/" + quiz.getSlug() + "-copy");
 			quiz.getQuizQuestionObj().forEach(quizObj -> quizObj.setQuiz(quiz));
 			session.save(quiz);
 			transaction.commit();
 		} catch (NullPointerException e) {
 			throw new DBExceptions("Due to id mismatch cant do the clone operation", e);
+		} finally {
+			session.close();
 		}
 		return quiz;
+	}
+
+	@Override
+	public List<Category> getCategory() throws DBExceptions {
+		Session session = null;
+		List<Category> categoryList = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			TypedQuery<Quiz> query = session.createQuery("from Category");
+			categoryList = ((org.hibernate.query.Query) query).list();
+		} catch (NullPointerException e) {
+			throw new DBExceptions("Due to id mismatch cant do the clone operation", e);
+		} finally {
+			session.close();
+		}
+		return categoryList;
+	}
+
+	@Override
+	public List<Level> getLevel() throws DBExceptions {
+		Session session = null;
+		List<Level> levelList = null;
+		try {
+			session = sessionFactory.getCurrentSession();
+			TypedQuery<Quiz> query = session.createQuery("from Level");
+			levelList = ((org.hibernate.query.Query) query).list();
+		} catch (NullPointerException e) {
+			throw new DBExceptions("Due to id mismatch cant do the clone operation", e);
+		} finally {
+			session.close();
+		}
+		return levelList;
 	}
 }

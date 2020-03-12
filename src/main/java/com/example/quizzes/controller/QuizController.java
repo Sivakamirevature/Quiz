@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.exception.ServiceExceptions;
+import com.example.quizzes.model.Category;
+import com.example.quizzes.model.Level;
 import com.example.quizzes.model.Quiz;
 import com.example.quizzes.model.Quiz_Question;
 import com.example.quizzes.service.IQuizService;
@@ -77,5 +79,15 @@ public class QuizController {
 	public List<Quiz_Question> getPoolQuestions(@PathVariable int qid, @PathVariable String poolname)
 			throws DBExceptions, ServiceExceptions {
 		return (List<Quiz_Question>) quizservice.getPoolQuestions(qid, poolname);
+	}
+	
+	@GetMapping(value = "/getCategories")
+	public List<Category> getCategory()throws ServiceExceptions, DBExceptions{
+		return quizservice.getCategory();		
+	}
+	
+	@GetMapping(value = "/getLevels")
+	public List<Level> getLevel()throws ServiceExceptions, DBExceptions{
+		return quizservice.getLevel();		
 	}
 }
