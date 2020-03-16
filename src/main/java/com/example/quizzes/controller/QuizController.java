@@ -18,6 +18,7 @@ import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.exception.ServiceExceptions;
 import com.example.quizzes.model.Category;
 import com.example.quizzes.model.Level;
+import com.example.quizzes.model.Pool;
 import com.example.quizzes.model.Quiz;
 import com.example.quizzes.model.Quiz_Question;
 import com.example.quizzes.service.IQuizService;
@@ -89,5 +90,9 @@ public class QuizController {
 	@GetMapping(value = "/getLevels")
 	public List<Level> getLevel()throws ServiceExceptions, DBExceptions{
 		return quizservice.getLevel();		
+	}
+	@GetMapping(value = "/getPools")
+	public List<Pool> getPool()throws ServiceExceptions, DBExceptions{
+		return quizservice.getPool();		
 	}
 }

@@ -6,6 +6,7 @@ import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.model.Category;
 import com.example.quizzes.model.Level;
+import com.example.quizzes.model.Pool;
 import com.example.quizzes.model.Quiz;
 import com.example.quizzes.model.Quiz_Question;
 
@@ -32,4 +33,6 @@ public interface IQuizDao {
 	List<Category> getCategory()throws DBExceptions;
 
 	List<Level> getLevel()throws DBExceptions;
+
+	List<Pool> getPool()throws DBExceptions;
 }
