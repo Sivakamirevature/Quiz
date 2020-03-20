@@ -2,6 +2,7 @@ package com.example.quizzes.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -15,8 +16,6 @@ public class Level {
 	@Id
 	@Column(name="id")
 	int levelId;
-	
-	
 	@Column(name="level_name")
 	String levelName;
 	@OneToOne()

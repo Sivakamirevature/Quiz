@@ -9,7 +9,11 @@ import com.example.quizzes.dao.IQuizDao;
 import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.exception.ServiceExceptions;
+import com.example.quizzes.model.Category;
+import com.example.quizzes.model.Level;
+import com.example.quizzes.model.Pool;
 import com.example.quizzes.model.Quiz;
+import com.example.quizzes.model.Quiz_Question;
 
 
 @Service
@@ -48,7 +52,27 @@ public class QuizServiceImpl implements IQuizService {
 		return quizdao.activeDeactiveQuiz(qid);
 	}
 
+	@Override
+	public List<Quiz_Question> getPoolQuestions(int qid, String poolname) throws DBExceptions {
+		return quizdao.getPoolQuestions(qid, poolname);
+	}
 
+	@Override
+	public Quiz cloneQuiz(Quiz quiz) throws ServiceExceptions, DBExceptions {
+		return quizdao.cloneQuiz(quiz);
+	}
+
+	@Override
+	public List<Category> getCategory() throws ServiceExceptions, DBExceptions {
+		return quizdao.getCategory();
+	}
+
+	@Override
+	public List<Level> getLevel() throws ServiceExceptions, DBExceptions {
+		return quizdao.getLevel();
+	}
 	
-
+	public List<Pool> getPool() throws ServiceExceptions, DBExceptions{
+		return quizdao.getPool();
+	}
 }

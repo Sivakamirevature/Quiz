@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.quizzes.dto.QuizQuestionsAssigning;
 import com.example.quizzes.exception.DBExceptions;
 import com.example.quizzes.exception.ServiceExceptions;
+import com.example.quizzes.model.Category;
+import com.example.quizzes.model.Level;
+import com.example.quizzes.model.Pool;
 import com.example.quizzes.model.Quiz;
+import com.example.quizzes.model.Quiz_Question;
 import com.example.quizzes.service.IQuizService;
 import com.fasterxml.jackson.annotation.JacksonInject.Value;
-
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -27,8 +30,9 @@ import com.fasterxml.jackson.annotation.JacksonInject.Value;
 public class QuizController {
 	@Autowired
 	IQuizService quizservice;
+
 	@GetMapping(value = "/getAllQuizzes")
-	public List<Quiz> getAllQuizze() throws ServiceExceptions, DBExceptions{
+	public List<Quiz> getAllQuizze() throws ServiceExceptions, DBExceptions {
 		List<Quiz> quizzes = null;
 		try {
 			quizzes = quizservice.getAllQuizzes();
@@ -37,75 +41,58 @@ public class QuizController {
 		}
 		return quizzes;
 	}
-	
-	@GetMapping(value ="/getQuizByID/{id}")
-	public List<Quiz> getQuizById(@PathVariable int id) throws ServiceExceptions, DBExceptions{
+
+	@GetMapping(value = "/getQuizByID/{id}")
+	public List<Quiz> getQuizById(@PathVariable int id) throws ServiceExceptions, DBExceptions {
 		System.out.print("from Controller");
 		List<Quiz> quizzesList = quizservice.getQuizByID(id);
 		return quizzesList;
 	}
-	@PostMapping(value="/doCreateQuiz")
+
+	@PostMapping(value = "/doCreateQuiz")
 	public Quiz doCreateQuiz(@RequestBody Quiz quiz) throws ServiceExceptions, DBExceptions {
 		quiz = quizservice.createQuiz(quiz);
-		 return quiz;
+		return quiz;
 	}
-	
-	@PutMapping(value="/doActiveDeactiveQuiz/{qid}")
+
+	@PutMapping(value = "/doActiveDeactiveQuiz/{qid}")
 	public int doDeactiveQuiz(@PathVariable int qid) throws ServiceExceptions, DBExceptions {
 		int id = quizservice.activeDeactiveQuiz(qid);
 		return id;
-	}	
-	
-	@DeleteMapping(value="/doDeleteByID/{qid}")
+	}
+
+	@DeleteMapping(value = "/doDeleteByID/{qid}")
 	public int doDeleteByID(@PathVariable int qid) throws ServiceExceptions, DBExceptions {
 		return quizservice.DeleteById(qid);
 	}
-	
-	@PutMapping(value="/doUpdateQuiz")
-	public Quiz doUpdateQuiz(@RequestBody Quiz quiz)throws ServiceExceptions, DBExceptions{
+
+	@PutMapping(value = "/doUpdateQuiz")
+	public Quiz doUpdateQuiz(@RequestBody Quiz quiz) throws ServiceExceptions, DBExceptions {
 		return quizservice.UpdateById(quiz);
 	}
 
-	/*
-	 * @GetMapping(value="/doClone/{id}") public List<Quiz> doClone(@PathVariable
-	 * int id)throws ServiceExceptions, DBExceptions{ return
-	 * quizservice.cloneQuiz(id); }
-	 */
-	  
-	  
-	/*
-	 * @GetMapping(value="/showPools/{qid}") public QuizQuestionsAssigning
-	 * showPools(@Pathvari)
-	 */
+	@PostMapping(value = "/doClone")
+	public Quiz doClone(@RequestBody Quiz quiz) throws ServiceExceptions, DBExceptions {
+		return quizservice.cloneQuiz(quiz);
+	}
+
+	@GetMapping(value = "/getpoolquestions/{qid}/{poolname}")
+	public List<Quiz_Question> getPoolQuestions(@PathVariable int qid, @PathVariable String poolname)
+			throws DBExceptions, ServiceExceptions {
+		return (List<Quiz_Question>) quizservice.getPoolQuestions(qid, poolname);
+	}
+	
+	@GetMapping(value = "/getCategories")
+	public List<Category> getCategory()throws ServiceExceptions, DBExceptions{
+		return quizservice.getCategory();		
+	}
+	
+	@GetMapping(value = "/getLevels")
+	public List<Level> getLevel()throws ServiceExceptions, DBExceptions{
+		return quizservice.getLevel();		
+	}
+	@GetMapping(value = "/getPools")
+	public List<Pool> getPool()throws ServiceExceptions, DBExceptions{
+		return quizservice.getPool();		
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
